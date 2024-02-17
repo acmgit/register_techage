@@ -1,9 +1,7 @@
 -- Registers nodes foreign Nodes for techage with tubes ...
 
-function register_tube(node, main_inventory, pull_inventory, push_inventory)
-    local pull_inventory = pull_inventory or main_inventory
-    local push_inventory = push_inventory or main_inventory
-
+function register_tube(node, pull_inventory, push_inventory)
+    local push_inventory = push_inventory or pull_inventory
     local OwnerCache = {}
 
     -- Check if the chest is in the protected area of the owner
@@ -22,16 +20,12 @@ function register_tube(node, main_inventory, pull_inventory, push_inventory)
     techage.register_node({node}, {
         on_inv_request = function(pos, in_dir, access_type)
             local meta = minetest.get_meta(pos)
-            if is_owner(pos, meta) then
-                return meta:get_inventory(), pull_inventory
-            end
+            return meta:get_inventory(), pull_inventory
         end,
         on_pull_item = function(pos, in_dir, num)
             local meta = minetest.get_meta(pos)
-            if is_owner(pos, meta) then
-                local inv = meta:get_inventory()
-                return techage.get_items(pos, inv, pull_inventory, num)
-            end
+            local inv = meta:get_inventory()
+            return techage.get_items(pos, inv, pull_inventory, num)
         end,
         on_push_item = function(pos, in_dir, stack)
             local meta = minetest.get_meta(pos)
@@ -55,7 +49,6 @@ end
 
 
 if(minetest.get_modpath("currency")) then
-    register_tube("currency:shop", "stock")
+    register_tube("currency:shop", "customers_gave", "stock")
 
 end
-
